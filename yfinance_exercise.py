@@ -6,7 +6,8 @@ class Stock:
 		self.ticker = yf.Ticker(stock_abbreviation)
 		self.info = self.ticker.info
 		self.news = self.ticker.news
-		self.history = self.ticker.history(period="max",interval="1mo")
+		self.available_history_data = [col for col in self.ticker.history().columns]
+		self.history_all = self.ticker.history(period="max",interval="1d",start="2007-12-01")
 		# possible parameter settings for <interval>:
 		#	"1d"
 		#	"1wk"
@@ -17,17 +18,21 @@ class Stock:
 		# print(hist["Open"], hist["Close"])
 
 	def __str__(self):
-		print(f"some info about {self.abbreviation}")
+		return f"{self.abbreviation}'s general information:\n" \
+			   f"{self.info}\n"
 
+	def get_history_specified(self, start, interval):
 
-# for key, value in nvidia
-# for news_item in nvidia.news:
-	#print(news_item)
-	# print(news_item["providerPublishTime"], news_item["title"], news_item["link"])
+		hist = self.ticker.history(period="max", start=start, interval=interval)
+		if len(hist) > 0:
+			return hist
+		else:
+			return f"no entry found for the specified search parameters"
 
-nvd = Stock("NVD")
-print(nvd.info)
+msft = Stock("MSFT")
 
+print(msft)
 
-print(nvd.history)
-
+print(f"available history data:\n{msft.available_history_data}\n")
+print(msft.history_all)
+# print(msft.get_history_specified("2007-01-01", "1wk"))
